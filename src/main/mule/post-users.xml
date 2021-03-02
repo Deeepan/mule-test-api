@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="post-usersSub_Flow" doc:id="756e5f06-f2ad-4dbc-883d-9ad4a4809bc0" >
+		<logger level="INFO" doc:name="Flow start" doc:id="3657d7da-4c54-45f0-8422-09f75b9624f9" message="post flow started"/>
+		<ee:transform doc:name="Transform Message" doc:id="b9102cc6-bbb2-41d5-894a-d2e60f87766b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	firstname: payload01.firstname,
+	phone: payload01.phone,
+	dob: payload01.dob,
+	email: payload01.email,
+	lastname: payload01.lastname
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:bulk-insert doc:name="Inserting users in db" doc:id="a71ebaab-517b-4872-bf69-07c5160098f8" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into users (firstname,lastname,dob,email,phone) values (:firstname,:lastname,:dob,:email,:phone)]]></db:sql>
+		</db:bulk-insert>
+		<ee:transform doc:name="Transform Message" doc:id="d7a96b94-4705-4fd2-bd72-c5361a29d187">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End Flow" doc:id="aac690c8-49cc-4239-b7b5-f47dc8a43ebb" message="Post users Flow end"/>
+	</sub-flow>
+</mule>

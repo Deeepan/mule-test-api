@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="put-usersSub_Flow" doc:id="d49eab03-43e5-4767-8c58-e92718a24d79" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="83e223fd-7fcd-425f-8b3e-a1bdd4027b5e" message="put users flow initiated"/>
+		<ee:transform doc:name="Transform Message" doc:id="bf5d0001-05da-47d0-ae03-e72cfe1c4d63" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	firstname: payload01.firstname,
+	phone: payload01.phone,
+	dob: payload01.dob,
+	id: payload01.id,
+	email: payload01.email,
+	lastname: payload01.lastname
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:bulk-update doc:name="Update the users Data" doc:id="5dce2edf-5bdf-4914-94e2-3486ede4a3c8" config-ref="Database_Config">
+			<db:sql ><![CDATA[update users set firstname = :firstname,lastname = :lastname,dob = :dob,email = :email,phone = :phone where id=:id]]></db:sql>
+		</db:bulk-update>
+		<ee:transform doc:name="Transform Message" doc:id="eb6cce18-e3ad-455a-a8c0-3801bf5c6a52" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": "success",
+	"message": "updated successfully"
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End Logger" doc:id="df7d7592-5eaf-49cd-bf23-f7b8375df0a6" />
+	</sub-flow>
+</mule>

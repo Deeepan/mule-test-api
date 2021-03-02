@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="globalError_Handler" doc:id="015aa21e-c440-415c-8338-9d1e7f359297" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="15394caa-7f87-45c2-a454-aa841775adc1" type="APIKIT:BAD_REQUEST">
+			<ee:transform doc:name="Transform Message" doc:id="0dabc8d7-a9a4-40e2-afbf-86808b11c1b8" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status Code": " 400",
+	"Message": "Bad request",
+	"Description":error.detailedDescription 
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5ee95c7b-8236-4865-a020-ee9f82a4c25a" type="APIKIT:NOT_FOUND">
+			<ee:transform doc:name="Transform Message" doc:id="0ff78139-1ada-4f36-9841-29a650309666" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status Code": " 404",
+	"Message": "Resource not found",
+	"Description":error.detailedDescription 
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c76a3ee9-dd9d-4f91-9717-b12fc626c48c" type="APIKIT:METHOD_NOT_ALLOWED">
+			<ee:transform doc:name="Transform Message" doc:id="8276e120-5495-4d2f-8148-b2e8f93505ff" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"Status Code": " 405",
+	"Message": "Method not allowed",
+	"Description":error.detailedDescription 
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9b2041a5-7ffc-4dbc-b072-05c7ae25277f" type="APIKIT:NOT_ACCEPTABLE">
+			<ee:transform doc:name="Transform Message" doc:id="78549350-e92c-466d-b1fb-4881b900f777" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"Status Code": " 406",
+	"Message": "Not acceptable",
+	"Description":error.detailedDescription 
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f1b98623-50bb-423f-866b-c1e4e2b9b481" type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+			<ee:transform doc:name="Transform Message" doc:id="ea61ac6b-1aa6-4392-bef5-6fa34d4cf4c6" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"Status Code": " 406",
+	"Message": "Unsupported media type",
+	"Description":error.detailedDescription 
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ae3e5463-2a7e-4b03-b94f-28f7fd51d5a9" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="ec61c9c6-7f06-468f-b0d1-aca4e4f8de4b" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"Status": error.errorMessage,
+	"Description":error.detailedDescription 
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>

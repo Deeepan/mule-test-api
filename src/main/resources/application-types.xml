@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="userdetails" format="json">
+      <types:shape format="weave" example="examples/example-7.json"><![CDATA[%dw 2.0
+
+type userdetails = Array<{|  firstname: String,   lastname: String,   dob: String,   email: String,   phone: Number {"typeId": "double"}|}> {"example": "[{\\\"firstname\\\":\\\"deepan\\\",\\\"lastname\\\":\\\"s\\\",\\\"dob\\\":\\\"1998-09-25\\\",\\\"email\\\":\\\"deepan968@gmail.com\\\",\\\"phone\\\":9597778067}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="update" format="json">
+      <types:shape format="weave" example="examples/example-5.json"><![CDATA[%dw 2.0
+
+type update = Array<{|  id: Number {"typeId": "int"},   firstname: String,   lastname: String,   dob: String,   email: String,   phone: Number {"typeId": "double"}|}> {"example": "[{\\\"id\\\":1234,\\\"firstname\\\":\\\"deepan\\\",\\\"lastname\\\":\\\"s\\\",\\\"dob\\\":\\\"1998-09-25\\\",\\\"email\\\":\\\"deepan968@gmail.com\\\",\\\"phone\\\":9597778067}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="getinput" format="json">
+      <types:shape format="weave" example="examples/example-6.json"><![CDATA[%dw 2.0
+
+type getinput = {|
+  firstname: String, 
+  dob: String, 
+  email: String, 
+  phone: Number {"typeId": "double"}
+|} {"example": "{\\\"firstname\\\":\\\"deepan\\\",\\\"dob\\\":\\\"1998-09-25\\\",\\\"email\\\":\\\"deepan968@gmail.com\\\",\\\"phone\\\":9597778067}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="postinput" format="json">
+      <types:shape format="weave" example="examples/example-8.json"><![CDATA[%dw 2.0
+
+type postinput = Array<{|  id: String,   firstname: String,   lastname: String,   dob: String,   email: String,   phone: Number {"typeId": "double"}|}> {"example": "[{\\\"id\\\":\\\"1\\\",\\\"firstname\\\":\\\"deepan\\\",\\\"lastname\\\":\\\"s\\\",\\\"dob\\\":\\\"1998-09-25\\\",\\\"email\\\":\\\"deepan968@gmail.com\\\",\\\"phone\\\":9597778067}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#b9102cc6-bbb2-41d5-894a-d2e60f87766b">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="userdetails"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#6c1a9a68-0481-431b-9911-3dfa671dc8eb">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="userdetails"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#57a85c7c-08e8-45e8-aab9-0873132da717">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="getinput"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#bf5d0001-05da-47d0-ae03-e72cfe1c4d63">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="postinput"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

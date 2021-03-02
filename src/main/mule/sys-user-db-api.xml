@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="sys-user-db-api-main">
+        <http:listener config-ref="HTTP_Listener_config" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="sys-user-db-api-config"/>
+    </flow>
+    <flow name="get:\user:sys-user-db-api-config">
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="df6a4328-45bd-48f9-a16f-0a91d37be587">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<flow-ref doc:name="Get users Sub_Flow" doc:id="9ab7885b-c23b-42ad-af01-9ba0e7ab3bad" name="get-usersSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0c6a2734-b6e3-4471-bc3b-dc6ab564c1c7" message="#[payload]"/>
+    </flow>
+	<flow name="get:\user\(id):sys-user-db-api-config">
+		<ee:transform doc:name="Transform Message" doc:id="38e6f56f-1aad-4839-b086-f3fd7b67edd3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.uriParams.'id']]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Get user by Id Sub_Flow" doc:id="2a2ed429-3c36-4b20-88bb-16b5a9fbf918" name="get-usersbyidSub_Flow" />
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+	<flow name="put:\user:application\json:sys-user-db-api-config">
+		<flow-ref doc:name="put-users Sub_flow" doc:id="46cefda2-8a59-4cc4-ae36-435c58c60405" name="put-usersSub_Flow"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+	<flow name="delete:\user:application\json:sys-user-db-api-config">
+		<flow-ref doc:name="delete Users Sub_Flow" doc:id="05436e96-d8a9-4ab2-8c2b-aa91973b10ae" name="delete-usersSub_Flow"/>
+		<ee:transform doc:name="Transform Message" doc:id="2a2975a7-d42c-4af9-bed4-443ab4cdf9c2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+    </flow>
+    <flow name="post:\user:application\json:sys-user-db-api-config">
+        <flow-ref doc:name="Post users Sub_Flow" doc:id="28b3fd1d-ae69-4e7d-82fc-98be4424fffb" name="post-usersSub_Flow"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>

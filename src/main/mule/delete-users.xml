@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="delete-usersSub_Flow" doc:id="ee9d1ed9-f10c-4417-a20a-a42747b72b9e" >
+		<logger level="INFO" doc:name="Flow Start" doc:id="2b30a21d-5da7-419d-924e-9ac3b45dc5cb" message="Delete users flow started"/>
+		<ee:transform doc:name="Transform Message" doc:id="6c1a9a68-0481-431b-9911-3dfa671dc8eb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload.id map ( id , indexOfId ) -> {
+	id: id
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:bulk-delete doc:name="Delete users from the db" doc:id="256e08be-c407-4286-9a94-bda46cc7e094" config-ref="Database_Config">
+			<db:sql ><![CDATA[DELETE FROM users WHERE id = :id]]></db:sql>
+		</db:bulk-delete>
+		<ee:transform doc:name="Transform Message" doc:id="f5265bf3-16f0-44c1-8303-2630e8c81173" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status:"success",
+	message:"successfully deleted"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End Flow" doc:id="1393eabf-2922-42a4-9be4-8b6733b787eb" message="delete users flow ended"/>
+	</sub-flow>
+</mule>

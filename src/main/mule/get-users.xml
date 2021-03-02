@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<sub-flow name="get-usersSub_Flow" doc:id="0e28d161-ef17-49c1-87e4-a54294d44ce7" >
+		<logger level="INFO" doc:name="Flow start" doc:id="8d3a7b42-e40b-4779-9fa3-2cab4894372f" message="Get user Flow initiated"/>
+		<ee:transform doc:name="Transform Message" doc:id="57a85c7c-08e8-45e8-aab9-0873132da717" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var query = if(sizeOf(payload) > 0) "select * from users where " else "select * from users"
+var arr = (payload pluck (value,key,index) -> key ++ " = " ++ "'" ++ value ++ "'")joinBy  " and " 
+---
+ query ++ arr]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:select doc:name="Getting the users from db" doc:id="31963a77-b7af-44fb-a163-6560d7d1d0f7" config-ref="Database_Config">
+			<db:sql ><![CDATA[#[payload]]]></db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="Logger" doc:id="1d3472d8-4ef0-4eec-a94b-1440bb9610e6" message="user data get from db"/>
+		<ee:transform doc:name="Transform Message" doc:id="0d53b608-4b2f-4195-aefe-e1dc8e11a7a0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End flow" doc:id="a5ec0e74-128c-476a-83d9-923f452bbf34" message="Get users flow end"/>
+	</sub-flow>
+	<sub-flow name="get-usersbyidSub_Flow" doc:id="540dbf40-3792-4059-a77d-36424a9d37bb" >
+		<db:select doc:name="Getting the specific users from db" doc:id="83cf926c-e084-44d2-aa6a-e86f77041fec" config-ref="Database_Config">
+			<db:sql><![CDATA[select * from users where id = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[id : payload]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="b1511d10-4d23-4145-a329-ac48a716a2ae">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>
